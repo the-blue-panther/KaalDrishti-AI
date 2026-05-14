@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+pydantic
+neo4j
+numpy
+matplotlib
+google-genai
+requests
+python-dotenv
+pyswisseph
+pyjwt
+passlib[bcrypt]
+python-multipart

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KaalDrishti AI Dashboard</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="stylesheet" href="/static/style_v2.css?v=3.2.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="cosmic-background"></div>
+    
+    <!-- Sidebar: Left Panel -->
+    <div id="sidebar-overlay" class="modal-overlay" style="display:none; background: rgba(0,0,0,0.4); backdrop-filter: none;"></div>
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <div class="user-profile-header">
+                <div class="user-avatar">👤</div>
+                <div class="user-meta">
+                    <span id="sidebar-username">Seeker</span>
+                    <button id="logout-btn" class="mini-btn">Logout</button>
+                </div>
+            </div>
+            <button id="close-sidebar-btn" class="mobile-only">✕</button>
+        </div>
+        
+        <div class="sidebar-content">
+            <button id="add-profile-btn" class="gold-btn" style="margin-top: 0; padding: 10px; font-size: 12px;">+ Create New Profile</button>
+            
+            <div class="profile-list-section">
+                <h4>My Astro Profiles</h4>
+                <div id="profile-list-container" class="profile-list">
+                    <!-- Profiles injected via JS -->
+                    <div class="profile-loading-skeleton">Loading Universe...</div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div class="sidebar-settings">
+                <h4>System Settings</h4>
+                <div class="setting-item">
+                    <label for="preferred-language">Response Language</label>
+                    <select id="preferred-language">
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi (हिंदी)</option>
+                        <option value="Bengali">Bengali (বাংলা)</option>
+                        <option value="Marathi">Marathi (मराठी)</option>
+                        <option value="Telugu">Telugu (తెలుగు)</option>
+                        <option value="Tamil">Tamil (தமிழ்)</option>
+                        <option value="Gujarati">Gujarati (ગુજરાતી)</option>
+                        <option value="Kannada">Kannada (ಕನ್ನಡ)</option>
+                        <option value="Malayalam">Malayalam (മലയാളം)</option>
+                        <option value="Punjabi">Punjabi (ਪੰਜਾਬੀ)</option>
+                        <option value="Urdu">Urdu (اردو)</option>
+                        <option value="Odia">Odia (ଓଡ଼ିଆ)</option>
+                        <option value="Spanish">Spanish (Español)</option>
+                        <option value="French">French (Français)</option>
+                        <option value="German">German (Deutsch)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="glass-dashboard">
+        <!-- Left Panel: Chat -->
+        <div class="panel chat-panel">
+            <div class="panel-header">
+                <div class="header-left">
+                    <button id="sidebar-toggle-btn" class="hamburger-btn">☰</button>
+                    <h1 class="project-title">KAALDRISHTI <span class="ai-glow">AI</span></h1>
+                </div>
+                <div class="header-right">
+                    <div class="status-dot" id="system-status" title="RAG Bridge Status"></div>
+                    <button id="mobile-menu-btn" class="mobile-only-btn">Analysis</button>
+                </div>
+            </div>
+
+            <div id="chat-output" class="chat-history">
+                <div class="message system-msg">Seeker, select or create an Astrological profile to begin.</div>
+                <!-- Empty State Placeholder -->
+                <div id="empty-chat-state" class="empty-state" style="display:none;">
+                    <div class="empty-icon">✨</div>
+                    <h3>Start Your Cosmic Journey</h3>
+                    <p>Create your first profile to receive a personalized reading.</p>
+                    <button id="empty-create-btn" class="gold-btn" style="width: auto; padding: 12px 30px;">+ Create Profile</button>
+                </div>
+            </div>
+
+            <div class="input-form">
+                <div class="chat-input-wrapper">
+                    <textarea id="question" placeholder="Ask your question here... e.g. What is my life purpose?"></textarea>
+                    <button id="send-btn" class="icon-btn" aria-label="Send">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Visuals -->
+        <div class="panel visual-panel" id="visual-panel">
+            <div class="visual-header mobile-only">
+                <span>Visual Analysis</span>
+                <button id="close-menu-btn">✕</button>
+            </div>
+            <div class="main-tab-bar">
+                <button id="tab-person" class="main-tab-btn active">👤 Details</button>
+                <button id="tab-varga" class="main-tab-btn">Varga Charts</button>
+                <button id="tab-dasha" class="main-tab-btn">Timeline</button>
+            </div>
+
+            <div id="person-section" class="glass-section">
+                 <div class="no-selection-msg">Load a profile to view details</div>
+            </div>
+
+            <div id="chart-section" class="glass-section" style="display:none;">
+                <div class="chart-controls" id="chart-tabs"></div>
+                <div class="chart-display">
+                    <div id="kundli-skeleton">Awaiting Data...</div>
+                    <img id="kundli-img" src="" alt="Matplotlib Render" style="display:none;">
+                </div>
+            </div>
+
+            <div id="dasha-section" class="glass-section" style="display:none;">
+                <div class="table-container">
+                    <table id="dasha-table">
+                        <thead>
+                            <tr>
+                                <th>Sequence Lord</th>
+                                <th>Start</th>
+                                <th>End</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dasha-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CREATE PROFILE MODAL -->
+    <div id="profile-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content glass-card profile-creation-card">
+            <div class="modal-header">
+                <h2>Initialize Birth Profile</h2>
+                <button id="close-modal-btn">✕</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-row">
+                    <input type="text" id="seeker-name" placeholder="Full Name" autocomplete="off">
+                    <select id="gender" style="flex: 0 0 100px;">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-label">Date of Birth</div>
+                <div class="coord-group dropdown-group">
+                    <select id="dob-day"><option value="">DD</option></select>
+                    <select id="dob-month"><option value="">MM</option></select>
+                    <select id="dob-year"><option value="">YYYY</option></select>
+                </div>
+
+                <div class="form-label">Time of Birth</div>
+                <div class="coord-group dropdown-group">
+                    <select id="dob-hour"><option value="">HH</option></select>
+                    <select id="dob-minute"><option value="">Min</option></select>
+                    <select id="dob-ampm">
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
+
+                <div class="form-label">Place of Birth</div>
+                <div class="autocomplete-container">
+                    <input type="text" id="location-input" placeholder="Search City/Town..." autocomplete="off">
+                    <div id="location-suggestions" class="autocomplete-items"></div>
+                </div>
+                
+                <div class="form-row" style="margin-top:10px;">
+                    <select id="tz">
+                        <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
+                        <option value="UTC">UTC</option>
+                        <option value="America/New_York">EST/EDT (New York)</option>
+                        <option value="Europe/London">Europe/London</option>
+                    </select>
+                </div>
+
+                <input type="hidden" id="lat" value="">
+                <input type="hidden" id="lon" value="">
+
+                <button id="save-profile-btn" class="gold-btn">Calculate & Save Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="modal-overlay">
+        <div class="modal-content glass-card">
+            <h2 id="auth-title">Welcome to KaalDrishti</h2>
+            <p id="auth-subtitle">Secure your astrological journey</p>
+            
+            <div id="login-form">
+                <input type="text" id="login-username" placeholder="Username" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button id="login-submit" class="gold-btn">Login</button>
+                <p class="toggle-text">New here? <a href="#" id="show-signup">Sign up</a></p>
+            </div>
+
+            <div id="signup-form" style="display:none;">
+                <input type="text" id="signup-username" placeholder="Choose Username" required>
+                <input type="password" id="signup-password" placeholder="Set Password" required>
+                <input type="password" id="signup-confirm" placeholder="Confirm Password" required>
+                <button id="signup-submit" class="gold-btn">Create Account</button>
+                <p class="toggle-text">Already have an account? <a href="#" id="show-login">Login</a></p>
+            </div>
+            
+            <div id="auth-error" class="error-msg" style="display:none;"></div>
+        </div>
+    </div>
+
+    <!-- Context Menu for Profiles -->
+    <div id="profile-context-menu" class="context-menu" style="display:none;">
+        <button id="ctx-load-profile">📂 Load Profile</button>
+        <button id="ctx-delete-profile" class="danger">🗑️ Delete Profile</button>
+    </div>
+
+    <!-- Frontend Assets with Cache-Busting -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="/static/app_v2.js?v=3.2.3" defer></script>
+</body>
+
+</html>

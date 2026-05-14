@@ -1,0 +1,72 @@
+# ==========================================
+# ASTRO AGENT - ROBUST GITIGNORE
+# Designed for maximum privacy and security.
+# ==========================================
+
+# --- CRITICAL: USER DATA & PERSONAL PRIVACY ---
+# Prevents any user-specific data from being committed
+/users/
+/user_data_examples/
+/Data_Exports/
+*.db
+*.sqlite
+*.log
+test_error.log
+
+# --- CRITICAL: SECRETS & API KEYS ---
+# Prevents sensitive credentials from leaking
+/API Keys/
+.env
+*.key
+credentials.json
+
+# --- PROPRIETARY KNOWLEDGE BASE ---
+# Protects the core knowledge graph and internal reports
+/Neo4j-Astro DB knowledge graph details/
+/Knowledge_Graph_Reports/
+/generated_rules/
+gemma_test_output_lite.md
+
+# --- PROPRIETARY INTELLECTUAL PROPERTY (DOCUMENTATION) ---
+# Hides internal planning and architecture documents
+/🔥 Future Planned Improvements/
+/Architecture_Documentation/
+/Project Structure/
+/docs/architecture/
+/docs/architecture.zip
+
+# --- PROPRIETARY LOGIC ENGINES & SCRIPTS (MANDATORY EXCLUSION) ---
+# As per your request to hide "hard worked proprietary things," 
+# these core logic folders and scripts are excluded to protect your implementation.
+/intelligence_layer/
+/agent_inference/
+/rag_bridge/
+/chart_engine/
+/feature_extraction/
+/Database_Audit_Scripts/
+/Database_Generation_Scripts/
+/validation_tests/
+/test_scripts/
+/generated_rules/
+
+# --- PYTHON ENVIRONMENT & BUILD ---
+__pycache__/
+*.py[cod]
+*$py.class
+/venv/
+/.venv/
+env/
+venv.bak/
+ENV/
+
+# --- TOOLS & BINARIES ---
+.DS_Store
+Thumbs.db
+/ngrok-bin/
+
+# --- LOCAL TESTS & SCRIPTS ---
+# Hides local experimentation and verification scripts
+local_gemma_test.py
+local_gemma_lite_test.py
+final_verification.py
+gemma_test_output_lite.md
