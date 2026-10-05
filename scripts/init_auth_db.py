@@ -1,7 +1,7 @@
 import sqlite3
 import os
 
-db_path = r"d:\Downloads\Projects\Astro Agent\users.db"
+db_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "users.db")
 
 def init_db():
     conn = sqlite3.connect(db_path)

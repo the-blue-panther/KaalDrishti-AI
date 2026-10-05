@@ -1,72 +1,77 @@
-# ==========================================
-# KAALDRISHTI AI - ROBUST GITIGNORE
-# Designed for maximum privacy and security.
-# ==========================================
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.key
+credentials.json
+*Neo4j-Active*.env
 
-# --- CRITICAL: USER DATA & PERSONAL PRIVACY ---
-# Prevents any user-specific data from being committed
+# User data and local databases
 /users/
 /user_data_examples/
 /Data_Exports/
 *.db
 *.sqlite
+*.sqlite3
 *.log
-test_error.log
 
-# --- CRITICAL: SECRETS & API KEYS ---
-# Prevents sensitive credentials from leaking
-/API Keys/
-.env
-*.key
-credentials.json
-
-# --- PROPRIETARY KNOWLEDGE BASE ---
-# Protects the core knowledge graph and internal reports
+# Knowledge graph exports and private reference material
 /Neo4j-Astro DB knowledge graph details/
 /Knowledge_Graph_Reports/
 /generated_rules/
-gemma_test_output_lite.md
-
-# --- PROPRIETARY INTELLECTUAL PROPERTY (DOCUMENTATION) ---
-# Hides internal planning and architecture documents
-/🔥 Future Planned Improvements/
-/Architecture_Documentation/
-/Project Structure/
+/Archived/
 /docs/architecture/
 /docs/architecture.zip
+/docs/interview_prep/
+/docs/marriage*
+/docs/ml_dataset_pipeline.md
+/docs/multidomain_corpus_expansion_report.md
+/docs/legacy_event_migration_report.md
+/docs/historical_data_source_inventory.md
+/docs/historical_event_data_architecture.md
+/docs/external_expansion_blockers.md
+/docs/relationship_vertical_slice_report.md
+/docs/marriage_two_stage_oof_pipeline.md
+/docs/kaaldrishti_empirical_calibration_architecture.md
+/docs/prediction_reliability.md
 
-# --- PROPRIETARY LOGIC ENGINES & SCRIPTS (MANDATORY EXCLUSION) ---
-# As per your request to hide "hard worked proprietary things," 
-# these core logic folders and scripts are excluded to protect your implementation.
-/intelligence_layer/
-/agent_inference/
-/rag_bridge/
-/chart_engine/
-/feature_extraction/
-/Database_Audit_Scripts/
-/Database_Generation_Scripts/
-/validation_tests/
-/test_scripts/
-/generated_rules/
-
-# --- PYTHON ENVIRONMENT & BUILD ---
+# Local environment and editor state
+.venv/
+.venv*/
+venv/
+env/
+ENV/
+.vscode/
+.idea/
+.pytest_cache/
 __pycache__/
 *.py[cod]
 *$py.class
-/venv/
-/.venv/
-env/
-venv.bak/
-ENV/
-
-# --- TOOLS & BINARIES ---
 .DS_Store
 Thumbs.db
-/ngrok-bin/
 
-# --- LOCAL TESTS & SCRIPTS ---
-# Hides local experimentation and verification scripts
-local_gemma_test.py
-local_gemma_lite_test.py
-final_verification.py
-gemma_test_output_lite.md
+# Build output and downloaded tools
+/.build-temp/
+/ngrok-bin/
+/dist/
+/build/
+
+# Offline research pipeline and source datasets; retain runtime disclosure helper
+/ml/*
+!/ml/reliability.py
+/vedastro_birth/
+/vedastro_relationships/
+/scripts/audit_vedastro_marriage_labels.py
+/scripts/build_vedastro_marriage_cohort_policy.py
+/scripts/build_vedastro_marriage_join.py
+*.normalized.jsonl
+*.rejected.jsonl
+*.joblib
+*.csv.gz
+*.zip
+
+# Local-only experiments and error dumps
+/local_gemma_test.py
+/local_gemma_lite_test.py
+/final_verification.py
+/test_error.log

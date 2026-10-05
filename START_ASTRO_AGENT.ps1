@@ -1,120 +1,46 @@
-# ============================================================
-#   🔮 ASTRO AGENT / KAALDRISHTI — One-Click Launcher
-#   PowerShell Version — Run as: .\START_ASTRO_AGENT.ps1
-# ============================================================
+$ErrorActionPreference = 'Stop'
+$ProjectDir = $PSScriptRoot
+$VenvPython = Join-Path $ProjectDir '.venv\Scripts\python.exe'
+$NgrokExe = Join-Path $ProjectDir 'ngrok-bin\ngrok.exe'
+$AppPort = 8000
+$LocalUrl = "http://localhost:$AppPort"
 
-$Host.UI.RawUI.WindowTitle = "🔮 Astro Agent Launcher"
+Write-Host 'Astro Agent / KaalDrishti launcher' -ForegroundColor Cyan
 
-function Write-Banner {
-    Write-Host ""
-    Write-Host "  ============================================================" -ForegroundColor Cyan
-    Write-Host "          🔮  ASTRO AGENT / KAALDRISHTI  LAUNCHER" -ForegroundColor Yellow
-    Write-Host "  ============================================================" -ForegroundColor Cyan
-    Write-Host ""
-}
-
-function Write-Step($num, $total, $msg) {
-    Write-Host "  [$num/$total]  $msg" -ForegroundColor White
-}
-
-function Write-Ok($msg) {
-    Write-Host "         ✅  $msg" -ForegroundColor Green
-}
-
-function Write-Warn($msg) {
-    Write-Host "         ⚠️   $msg" -ForegroundColor Yellow
-}
-
-function Write-Err($msg) {
-    Write-Host "         ❌  $msg" -ForegroundColor Red
-}
-
-# ── CONFIG ────────────────────────────────────────────────────
-$ProjectDir  = "d:\Downloads\Projects\Astro Agent"
-$VenvPython  = "$ProjectDir\venv\Scripts\python.exe"
-$VenvActivate= "$ProjectDir\venv\Scripts\Activate.ps1"
-$NgrokExe    = "$ProjectDir\ngrok-bin\ngrok.exe"
-$AppPort     = 8000
-$LocalUrl    = "http://localhost:$AppPort"
-# ─────────────────────────────────────────────────────────────
-
-Write-Banner
-
-# ── STEP 1: Verify venv ───────────────────────────────────────
-Write-Step 1 4 "Checking virtual environment..."
 if (-not (Test-Path $VenvPython)) {
-    Write-Err "venv not found at: $VenvPython"
-    Write-Warn "Run the following to fix it:"
-    Write-Host ""
-    Write-Host "    python -m venv `"$ProjectDir\venv`"" -ForegroundColor Gray
-    Write-Host "    pip install -r requirements.txt" -ForegroundColor Gray
-    Write-Host ""
-    Read-Host "Press Enter to exit"
+    Write-Error "Python 3.11 venv is missing. Create it with: py -3.11 -m venv `"$ProjectDir\.venv`"; then install requirements.txt and requirements-dev.txt."
     exit 1
 }
-Write-Ok "venv found."
-Write-Host ""
 
-# ── STEP 2: Set PYTHONPATH ────────────────────────────────────
-Write-Step 2 4 "Setting PYTHONPATH..."
-$env:PYTHONPATH = $ProjectDir
-Write-Ok "PYTHONPATH = $env:PYTHONPATH"
-Write-Host ""
-
-# ── STEP 3: Launch FastAPI server ─────────────────────────────
-Write-Step 3 4 "Starting FastAPI server on port $AppPort ..."
-
-$serverArgs = @(
-    "-NoExit",
-    "-Command",
-    "& { `$env:PYTHONPATH='$ProjectDir'; & '$VenvActivate'; python '$ProjectDir\main.py' }"
-)
-
-Start-Process powershell `
-    -ArgumentList $serverArgs `
-    -WorkingDirectory $ProjectDir `
-    -WindowStyle Normal
-
-Write-Ok "Server window launched."
-Write-Host ""
-
-# ── Wait for server boot ──────────────────────────────────────
-Write-Host "         ⏳  Waiting 5 seconds for server to initialise..." -ForegroundColor DarkGray
-Start-Sleep -Seconds 5
-Write-Host ""
-
-# ── STEP 4: Launch ngrok ──────────────────────────────────────
-Write-Step 4 4 "Starting ngrok tunnel..."
-if (-not (Test-Path $NgrokExe)) {
-    Write-Warn "ngrok.exe not found at: $NgrokExe — skipping tunnel."
-} else {
-    $ngrokArgs = @(
-        "-NoExit",
-        "-Command",
-        "& '$NgrokExe' http $AppPort"
-    )
-    Start-Process powershell `
-        -ArgumentList $ngrokArgs `
-        -WorkingDirectory "$ProjectDir\ngrok-bin" `
-        -WindowStyle Normal
-    Write-Ok "ngrok tunnel window launched."
+$PythonVersion = & $VenvPython -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"
+if ($PythonVersion -ne '3.11') {
+    Write-Error "Expected Python 3.11, but this venv uses Python $PythonVersion. Recreate it with py -3.11."
+    exit 1
 }
-Write-Host ""
 
-# ── Open browser ──────────────────────────────────────────────
-Write-Host "         🌐  Opening browser at $LocalUrl ..." -ForegroundColor Magenta
-Start-Sleep -Seconds 2
+try {
+    & $VenvPython -c 'import fastapi, swisseph, uvicorn'
+    if ($LASTEXITCODE -ne 0) { throw 'Required runtime packages are missing.' }
+} catch {
+    Write-Error "Runtime dependencies are incomplete. Run: `"$VenvPython`" -m pip install -r `"$ProjectDir\requirements.txt`""
+    exit 1
+}
+
+$env:PYTHONPATH = $ProjectDir
+$Server = Start-Process -FilePath $VenvPython `
+    -ArgumentList @('-m', 'uvicorn', 'main:app', '--host', '0.0.0.0', '--port', "$AppPort", '--reload') `
+    -WorkingDirectory $ProjectDir -PassThru
+
+Start-Sleep -Seconds 5
+if ($Server.HasExited) {
+    Write-Error 'The API server exited during startup. Check the server process output and application logs.'
+    exit 1
+}
+
+if (Test-Path $NgrokExe) {
+    Start-Process -FilePath $NgrokExe -ArgumentList @('http', "$AppPort") -WorkingDirectory (Split-Path $NgrokExe)
+}
+
 Start-Process $LocalUrl
-Write-Host ""
-
-# ── Summary ───────────────────────────────────────────────────
-Write-Host "  ============================================================" -ForegroundColor Cyan
-Write-Host "    ✅  All systems are GO!" -ForegroundColor Green
-Write-Host ""
-Write-Host "    📡  Local  :  $LocalUrl" -ForegroundColor White
-Write-Host "    🌐  Ngrok  :  Check the ngrok window for the public URL" -ForegroundColor White
-Write-Host ""
-Write-Host "    To STOP: press Ctrl+C in each launched terminal window." -ForegroundColor DarkGray
-Write-Host "  ============================================================" -ForegroundColor Cyan
-Write-Host ""
-Read-Host "Press Enter to close this launcher"
+Write-Host "Server is running at $LocalUrl using Python 3.11." -ForegroundColor Green
+Write-Host 'Stop the API server from its process window when finished.'

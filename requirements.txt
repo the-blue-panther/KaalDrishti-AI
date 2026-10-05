@@ -3,11 +3,15 @@ uvicorn
 pydantic
 neo4j
 numpy
+scikit-learn
 matplotlib
 google-genai
 requests
 python-dotenv
+tzdata
 pyswisseph
+timezonefinder==9.0.0
+timezonefinder-data==3.2026.3.post1
 pyjwt
 passlib[bcrypt]
 python-multipart
